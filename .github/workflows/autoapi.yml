@@ -10,7 +10,7 @@ on:
   #  branches: 
   #    - master
   schedule:
-    - cron: "10 */2 * * *"
+    - cron: "10 */4 * * *"
   watch:
     types: [started]
    
@@ -59,11 +59,14 @@ jobs:
         rm -f refreshtoken.txt
         rm -f Secret.txt
     - name: Commit #Upload a new refresh_token to the repository
+      env: 
+        GIT_NAME: ${{ secrets.GIT_NAME }} # git_name prepare
+        GIT_EMAIL: ${{ secrets.GIT_EMAIL }} # git_email prepare
       run: |
-        git config --global user.email kjmcabangon@slsu.edu.ph
-        git config --global user.name kylierst
+        git config --global user.name $GIT_NAME
+        git config --global user.email $GIT_EMAIL
         git add .
-        git commit -m "Update new refresh token with MSO_E5_Dev_AutoRenew" -a
+        git commit -m "Update new refresh token" -a
     - name: Push changes
       uses: ad-m/github-push-action@v0.6.0
       with:
