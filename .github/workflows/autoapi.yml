@@ -51,6 +51,19 @@ jobs:
       run: | 
         echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
         python3 temp.py
+    - name: Check for Webhook Sent File
+      run: |
+        if [ -f webhook_sent.txt ]; then
+          echo "Webhook already sent."
+          echo "webhook_sent=true" >> $GITHUB_ENV
+        else
+          echo "webhook_sent=false" >> $GITHUB_ENV
+        fi
+    - name: Send Discord Webhook on Failure
+      if: ${{ failure() && env.webhook_sent == 'false' }}
+      run: |
+        curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${{ secrets.DISCORD_FAILURE_MESSAGE }}\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
+        touch webhook_sent.txt
     - name: Delete secrets config #Delete secret config
       run: | 
         rm -f temp.py
