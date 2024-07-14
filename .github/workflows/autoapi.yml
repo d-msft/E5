@@ -64,6 +64,15 @@ jobs:
       run: |
         curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${{ secrets.DISCORD_FAILURE_MESSAGE }}\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
         touch webhook_sent.txt
+    - name: Clean up webhook file on Success
+      if: success()
+      run: |
+        if [ -f webhook_sent.txt ]; then
+          rm -f webhook_sent.txt || true
+          echo "Webhook file cleaned up."
+        else
+          echo "No webhook file found to clean up."
+        fi
     - name: Delete secrets config #Delete secret config
       run: | 
         rm -f temp.py
