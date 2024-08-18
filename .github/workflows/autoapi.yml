@@ -48,7 +48,7 @@ jobs:
         sed -i '12 r configkey.txt' temp.py
         sed -i '14 r refreshtoken.txt' temp.py
     - name: Test Api #ApiCall
-      continue-on-error: true
+      if: always()
       run: | 
         echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
         python3 temp.py
