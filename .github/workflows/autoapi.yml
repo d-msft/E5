@@ -48,11 +48,11 @@ jobs:
         sed -i '12 r configkey.txt' temp.py
         sed -i '14 r refreshtoken.txt' temp.py
     - name: Test Api #ApiCall
-      if: always()
       run: | 
         echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
         python3 temp.py
     - name: Check for Webhook Sent File
+      if: always()
       run: |
         if [ -f webhook_sent.txt ]; then
           echo "Webhook already sent."
@@ -61,12 +61,13 @@ jobs:
           echo "webhook_sent=false" >> $GITHUB_ENV
         fi
     - name: Send Discord Webhook on Failure
-      if: ${{ failure() && env.webhook_sent == 'false' }}
+      id: send-webhook
+      if: ${{ always() && (failure() && env.webhook_sent == 'false') }}
       run: |
         curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${{ secrets.DISCORD_FAILURE_MESSAGE }}\"}" ${{ secrets.DISCORD_WEBHOOK_URL }}
         touch webhook_sent.txt
     - name: Clean up webhook file on Success
-      if: success()
+      if: ${{ always() && steps.send-webhook.outcome == 'success' }}
       run: |
         if [ -f webhook_sent.txt ]; then
           rm -f webhook_sent.txt || true
