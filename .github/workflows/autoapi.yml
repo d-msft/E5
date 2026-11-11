@@ -27,9 +27,9 @@ jobs:
         persist-credentials: true # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
         fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
     - name: Set up Python #Install python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v7
       with:
-        python-version: 3.9
+        python-version: 3.13
         check-latest: true
     - name: Install requests #Installation requests
       run: |
